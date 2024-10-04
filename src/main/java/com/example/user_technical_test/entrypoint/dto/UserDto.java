@@ -5,4 +5,4 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record UserDto(Long id, String nome, String email, String senha, LocalDateTime dataCriacao) {}
+public record UserDto(Long id, String name, String email, String password, LocalDateTime dateRegister) {}

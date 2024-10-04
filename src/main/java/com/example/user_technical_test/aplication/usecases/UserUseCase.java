@@ -7,6 +7,7 @@ import com.example.user_technical_test.domain.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,7 @@ public class UserUseCase {
             throw new UserAlreadyRegisteredException();
         });
         newData.setPassword(encryptUseCase.encrypt(newData.getPassword()));
+        newData.setRegisterDate(LocalDateTime.now());
         return gateway.save(newData);
     }
 
