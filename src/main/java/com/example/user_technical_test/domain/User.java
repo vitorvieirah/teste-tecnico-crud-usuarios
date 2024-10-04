@@ -14,8 +14,17 @@ import java.time.LocalDateTime;
 public class User {
 
     private Long id;
-    private String nome;
+    private String name;
     private String email;
-    private String senha;
-    private LocalDateTime dataCricao;
+    private String password;
+    private LocalDateTime registerDate;
+
+    public void setData(User newData) {
+        if(newData.getName() != null)
+            this.name = newData.getName();
+        if(newData.getEmail() != null)
+            this.email = newData.getEmail();
+        if(newData.getPassword() != null)
+            this.password = newData.getPassword();
+    }
 }

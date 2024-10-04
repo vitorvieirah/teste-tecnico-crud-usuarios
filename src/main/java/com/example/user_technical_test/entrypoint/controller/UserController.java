@@ -1,6 +1,6 @@
 package com.example.user_technical_test.entrypoint.controller;
 
-import com.example.user_technical_test.aplication.usecases.UsuarioUseCase;
+import com.example.user_technical_test.aplication.usecases.UserUseCase;
 import com.example.user_technical_test.entrypoint.dto.UserDto;
 import com.example.user_technical_test.entrypoint.mapper.UserMapper;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AllArgsConstructor
 public class UserController {
 
-    private final UsuarioUseCase useCase;
+    private final UserUseCase useCase;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody UserDto newUser) {
@@ -30,7 +30,7 @@ public class UserController {
 
     @PutMapping("/change")
     public ResponseEntity<UserDto> change(@RequestBody UserDto newData) {
-        UserDto result = UserMapper.forDto(useCase.change(newData));
+        UserDto result = UserMapper.forDto(useCase.change(UserMapper.forDomainFromDto(newData)));
         return ResponseEntity.ok(result);
     }
 
