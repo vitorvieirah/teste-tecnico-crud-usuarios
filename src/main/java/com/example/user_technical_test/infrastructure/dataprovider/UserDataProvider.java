@@ -2,9 +2,9 @@ package com.example.user_technical_test.infrastructure.dataprovider;
 
 import com.example.user_technical_test.aplication.gateways.UserGateway;
 import com.example.user_technical_test.domain.User;
-import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorConsultByEmail;
-import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorConsultById;
-import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorSavingUser;
+import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorConsultByEmailException;
+import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorConsultByIdException;
+import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorSavingUserException;
 import com.example.user_technical_test.infrastructure.mapper.UserMapper;
 import com.example.user_technical_test.infrastructure.repositories.UserRepository;
 import com.example.user_technical_test.infrastructure.repositories.entities.UserEntity;
@@ -28,7 +28,7 @@ public class UserDataProvider implements UserGateway {
             userEntity = repository.save(userEntity);
         } catch (Exception exception) {
             log.error("Erro ao salvar usuário", exception);
-            throw new ErrorSavingUser(exception.getMessage());
+            throw new ErrorSavingUserException(exception.getMessage());
         }
 
         return UserMapper.forDomain(userEntity);
@@ -41,7 +41,7 @@ public class UserDataProvider implements UserGateway {
             userEntity = repository.findByEmail(email);
         } catch (Exception exception) {
             log.error("Erro ao consultar por email", exception);
-            throw new ErrorConsultByEmail(exception.getMessage());
+            throw new ErrorConsultByEmailException(exception.getMessage());
         }
 
         return userEntity.map(UserMapper::forDomain);
@@ -54,7 +54,7 @@ public class UserDataProvider implements UserGateway {
             userEntity = repository.findById(idUser);
         } catch (Exception exception) {
             log.error("Erro ao consultar por id", exception);
-            throw new ErrorConsultById(exception.getMessage());
+            throw new ErrorConsultByIdException(exception.getMessage());
         }
         return userEntity.map(UserMapper::forDomain);
     }
