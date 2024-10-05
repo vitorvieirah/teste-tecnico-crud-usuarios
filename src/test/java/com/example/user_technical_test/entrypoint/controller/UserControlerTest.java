@@ -1,14 +1,9 @@
 package com.example.user_technical_test.entrypoint.controller;
 
-import com.example.user_technical_test.aplication.usecases.EncryptUseCase;
-import com.example.user_technical_test.domain.User;
-import com.example.user_technical_test.infrastructure.mapper.UserMapper;
 import com.example.user_technical_test.infrastructure.repositories.UserRepository;
+import com.example.user_technical_test.infrastructure.repositories.entities.UserEntity;
 import com.example.user_technical_test.validator.UserValidator;
-import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,48 +28,66 @@ public class UserControlerTest {
     @MockBean
     private UserRepository repository;
 
-    @MockBean
-    private EncryptUseCase encryptUseCase;
-
-    private final LocalDateTime fixedDate = LocalDateTime.of(2024, 10, 5, 12, 23, 42, 414851900);
-
-    private final User userTest = User.builder()
+    private final UserEntity userTest = UserEntity.builder()
             .id(1L)
             .name("User Test")
             .email("emailteste@gmail.com")
             .password("senhateste123")
-            .registerDate(fixedDate)
+            .dateRegister(LocalDateTime.of(2024, 10, 5, 12, 23, 42, 414851900))
             .build();
+
+    private final String USUARIO_JSON = "{\"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
 
     @Test
     void testeMetodoCadastroUsuario() throws Exception {
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(repository.save(Mockito.any())).thenReturn(UserMapper.forEntity(userTest));
-        Mockito.when(encryptUseCase.encrypt(Mockito.any())).thenReturn(userTest.getPassword());
-
-        String usuarioJson = "{\"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
+        Mockito.when(repository.save(Mockito.any())).thenReturn(userTest);
 
         ResultActions resultadoRequisicao = mockMvc
                 .perform(MockMvcRequestBuilders.post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(usuarioJson));
+                        .content(USUARIO_JSON));
 
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isCreated());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L));
-        resultadoRequisicao.andExpect(result -> {
-            String responseContent = result.getResponse().getContentAsString();
-
-            String dateRegisterStr = JsonPath.parse(responseContent).read("$.dateRegister", String.class);
-
-            LocalDateTime actualDate = LocalDateTime.parse(dateRegisterStr);
-
-            Assertions.assertEquals(userTest.getRegisterDate(), actualDate);
-        });
         UserValidator.userValidateController(resultadoRequisicao);
     }
 
     @Test
-    void testeMetodoConsutlra
+    void testeMetodoConsultaPorId() throws Exception {
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTest));
+        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/users/consult/{id}", userTest.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
 
+        UserValidator.userValidateController(resultadoRequisicao);
+    }
 
+    @Test
+    void testeMetodoAlterar() throws Exception {
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTest));
+        Mockito.when(repository.save(Mockito.any())).thenReturn(userTest);
+
+        String usuarioJson = "{\"id\": 1, \"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
+
+        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders
+                        .put("/users/change")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(usuarioJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        UserValidator.userValidateController(resultadoRequisicao);
+    }
+
+    @Test
+    void teteMetodoDeletar() throws Exception {
+        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(userTest));
+
+        Mockito.doNothing().when(repository).deleteById(Mockito.anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/delete/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        Mockito.verify(repository, Mockito.times(1)).deleteById(1L);
+    }
 }

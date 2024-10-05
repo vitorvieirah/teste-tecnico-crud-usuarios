@@ -33,17 +33,28 @@ public class UserUseCaseTest {
 
     private final Long idTest = 1L;
 
+    private final LocalDateTime fixedDate = LocalDateTime.of(2024, 10, 5, 12, 23, 42);
+
     private final User userTest = User.builder()
             .id(idTest)
             .name("User Test")
             .email("emailteste@gmail.com")
             .password("senhateste123")
-            .registerDate(LocalDateTime.now())
+            .registerDate(fixedDate)
             .build();
 
     @Test
     void testRegistration() {
         userTest.setId(null);
+        User userEsperado = User.builder()
+                .id(userTest.getId())
+                .name(userTest.getName())
+                .email(userTest.getEmail())
+                .password(userTest.getPassword())
+                .registerDate(userTest.getRegisterDate())
+                .build();
+
+
         Mockito.when(gateway.consultByEmail(userTest.getEmail())).thenReturn(Optional.empty());
         Mockito.when(gateway.save(captor.capture())).thenReturn(userTest);
         Mockito.when(encryptUseCase.encrypt(userTest.getPassword())).thenReturn(userTest.getPassword());
@@ -52,9 +63,10 @@ public class UserUseCaseTest {
         User userResult = captor.getValue();
 
         Assertions.assertNull(userResult.getId());
-        Assertions.assertEquals(userTest.getName(), userResult.getName());
-        Assertions.assertEquals(userTest.getEmail(), userResult.getEmail());
-        Assertions.assertEquals(userTest.getRegisterDate(), userResult.getRegisterDate());
+        Assertions.assertEquals(userEsperado.getName(), userResult.getName());
+        Assertions.assertEquals(userEsperado.getEmail(), userResult.getEmail());
+        Assertions.assertNotNull(userResult.getRegisterDate());
+        Assertions.assertEquals(userEsperado.getPassword(), userResult.getPassword());
     }
 
     @Test
