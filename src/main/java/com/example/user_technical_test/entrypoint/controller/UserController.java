@@ -3,6 +3,7 @@ package com.example.user_technical_test.entrypoint.controller;
 import com.example.user_technical_test.aplication.usecases.UserUseCase;
 import com.example.user_technical_test.entrypoint.dto.UserDto;
 import com.example.user_technical_test.entrypoint.mapper.UserMapper;
+import com.example.user_technical_test.infrastructure.security.TokenUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserController {
 
     private final UserUseCase useCase;
+    private final TokenUseCase tokenUseCase;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody UserDto newUser) {
         UserDto result = UserMapper.forDto(useCase.register(UserMapper.forDomainFromDto(newUser)));
-        return ResponseEntity.created(UriComponentsBuilder.newInstance().path("/usuario/{id}").buildAndExpand(result.id()).toUri())
+        String token = tokenUseCase.generateToken(UserMapper.forDomainFromDto(result));
+        result.setToken(token);
+        return ResponseEntity.created(UriComponentsBuilder.newInstance().path("/usuario/{id}").buildAndExpand(result.getId()).toUri())
                 .body(result);
     }
 

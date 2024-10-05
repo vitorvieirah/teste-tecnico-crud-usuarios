@@ -8,11 +8,11 @@ public class UserMapper {
 
     public static User forDomainFromDto(UserDto dto) {
         return User.builder()
-                .id(dto.id())
-                .name(dto.name())
-                .email(dto.email())
-                .password(dto.password())
-                .registerDate(dto.dateRegister())
+                .id(dto.getId())
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .registerDate(dto.getDateRegister())
                 .build();
     }
 

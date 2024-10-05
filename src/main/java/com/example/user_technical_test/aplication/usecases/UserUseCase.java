@@ -47,4 +47,14 @@ public class UserUseCase {
         consultById(idUser);
         gateway.delete(idUser);
     }
+
+    public User consultarPorEmail(String email) {
+        Optional<User> user = gateway.consultByEmail(email);
+
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        return user.get();
+    }
 }

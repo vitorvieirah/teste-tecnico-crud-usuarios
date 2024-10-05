@@ -42,4 +42,10 @@ public class UserHandlerController {
         MessageErrorHandler messageErrorHandler = MessageErrorHandler.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).message(exception.getMessage()).build();
         return ResponseEntity.status(messageErrorHandler.status()).body(messageErrorHandler);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<MessageErrorHandler> erroGeral(Exception exception) {
+        MessageErrorHandler messageErrorHandler = MessageErrorHandler.builder().status(HttpStatus.BAD_REQUEST).message(exception.getMessage()).build();
+        return ResponseEntity.status(messageErrorHandler.status()).body(messageErrorHandler);
+    }
 }
