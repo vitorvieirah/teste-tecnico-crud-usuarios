@@ -18,7 +18,7 @@ public class UserUseCase {
     private final EncryptUseCase encryptUseCase;
 
     public User register(User newData) {
-        Optional<User> user = consultByEmail(newData.getEmail());
+        Optional<User> user = gateway.consultByEmail(newData.getEmail());
         user.ifPresent(userOptional -> {
             throw new UserAlreadyRegisteredException();
         });
@@ -46,9 +46,5 @@ public class UserUseCase {
     public void delete(Long idUser) {
         consultById(idUser);
         gateway.delete(idUser);
-    }
-
-    private Optional<User> consultByEmail(String email) {
-        return gateway.consultByEmail(email);
     }
 }
