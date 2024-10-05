@@ -22,7 +22,7 @@ public class UserController {
                 .body(result);
     }
 
-    @GetMapping("/consult/{id}")
+    @GetMapping(value = "/consult/{idUser}")
     public ResponseEntity<UserDto> consultById(@PathVariable Long idUser) {
         UserDto result = UserMapper.forDto(useCase.consultById(idUser));
         return ResponseEntity.ok(result);
@@ -34,7 +34,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value = "/delete/{idUser}")
     public ResponseEntity<Void> delete(@PathVariable Long idUser) {
         useCase.delete(idUser);
         return ResponseEntity.noContent().build();
