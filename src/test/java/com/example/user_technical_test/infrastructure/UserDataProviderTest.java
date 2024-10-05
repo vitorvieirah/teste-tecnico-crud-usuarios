@@ -6,6 +6,7 @@ import com.example.user_technical_test.infrastructure.dataprovider.exceptions.Er
 import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorConsultUserByIdException;
 import com.example.user_technical_test.infrastructure.dataprovider.exceptions.ErrorSavingUserException;
 import com.example.user_technical_test.infrastructure.mapper.UserMapper;
+import com.example.user_technical_test.infrastructure.mapper.UserMapperTest;
 import com.example.user_technical_test.infrastructure.repositories.UserRepository;
 import com.example.user_technical_test.validator.UserValidator;
 import org.junit.jupiter.api.Assertions;
