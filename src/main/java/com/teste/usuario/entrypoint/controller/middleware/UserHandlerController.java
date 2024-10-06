@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class UserHandlerController {
@@ -19,37 +20,39 @@ public class UserHandlerController {
     @ExceptionHandler(UsuarioJaCadastradoComEmailException.class)
     public ResponseEntity<ResponseDto> usuarioJaCadastradoExceptionHandler(UsuarioJaCadastradoComEmailException exception) {
         ResponseDto.ErroDto  erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.comErro(erroDto));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.comErro(List.of(erroDto)));
     }
 
     @ExceptionHandler(UsuarioNaoEncontradoException.class)
     public ResponseEntity<ResponseDto> usuarioNaoEncontradoExceptionHandler(UsuarioNaoEncontradoException exception) {
         ResponseDto.ErroDto  erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.comErro(erroDto));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.comErro(List.of(erroDto)));
     }
 
 
     @ExceptionHandler(ErroDataProviderException.class)
     public ResponseEntity<ResponseDto> erroDataProviderExceptionHandler(ErroDataProviderException exception) {
         ResponseDto.ErroDto  erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.comErro(erroDto));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.comErro(List.of(erroDto)));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto> erroGeral(Exception exception) {
         ResponseDto.ErroDto erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.comErro(erroDto));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.comErro(List.of(erroDto)));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ResponseDto<Void>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
         List<FieldError> erros = exception.getFieldErrors();
-        return ResponseEntity.badRequest().body(erros.stream().map(DadosErroValidacao::new).toList());
-    }
+        List<ResponseDto.ErroDto> erroDtos = erros.stream()
+                .map(erro -> ResponseDto.ErroDto.builder()
+                        .mensagem(erro.getDefaultMessage())
+                        .build())
+                .collect(Collectors.toList());
 
-    private record DadosErroValidacao(String campo, String mensagem) {
-        public DadosErroValidacao(FieldError fieldError) {
-            this(fieldError.getField(), fieldError.getDefaultMessage());
-        }
+        ResponseDto<Void> responseDto = ResponseDto.comErro(erroDtos);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
     }
 }

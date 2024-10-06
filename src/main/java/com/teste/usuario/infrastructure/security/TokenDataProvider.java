@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.teste.usuario.aplication.gateways.TokenGateway;
 import com.teste.usuario.domain.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,18 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class TokenUseCase {
+public class TokenDataProvider implements TokenGateway {
 
     @Value("${api.security.token.secret}")
     private String chaveSecreta;
 
-    public String generateToken(Usuario usuario) {
+    @Override
+    public String geradorToken(String emailUsuario) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(chaveSecreta);
             String token = JWT.create()
                     .withIssuer("api-autenticacao-login")
-                    .withSubject(usuario.getEmail())
+                    .withSubject(emailUsuario)
                     .withExpiresAt(this.geraDataDeExpiracao())
                     .sign(algorithm);
 
@@ -33,6 +35,7 @@ public class TokenUseCase {
         }
     }
 
+    @Override
     public String validaToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(chaveSecreta);

@@ -7,13 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,13 +21,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class FiltroDeSeguranca extends OncePerRequestFilter {
 
-    private final TokenUseCase tokenUseCase;
+    private final TokenDataProvider tokenDataProvider;
     private final UsuarioRepository repository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recuperarToken(request);
-        var login = tokenUseCase.validaToken(token);
+        var login = tokenDataProvider.validaToken(token);
         if(login != null) {
             UsuarioEntity usuario = repository.findByEmail(login).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
             var autorizacoes = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

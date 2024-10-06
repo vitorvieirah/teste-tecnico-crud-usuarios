@@ -3,13 +3,12 @@ package com.teste.usuario.entrypoint.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.teste.usuario.aplication.usecases.AutenticacaoUseCase;
 import com.teste.usuario.builder.UsuarioBuilder;
-import com.teste.usuario.entrypoint.dto.ResponseDto;
-import com.teste.usuario.entrypoint.dto.UsuarioDto;
 import com.teste.usuario.infrastructure.mapper.UsuarioMapper;
 import com.teste.usuario.infrastructure.repositories.UsuarioRepository;
 import com.teste.usuario.infrastructure.repositories.entities.UsuarioEntity;
-import com.teste.usuario.infrastructure.security.TokenUseCase;
+import com.teste.usuario.infrastructure.security.TokenDataProvider;
 import com.teste.usuario.validator.UsuarioValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ public class UsuarioControlerTest {
     private UsuarioRepository repository;
 
     @Autowired
-    private TokenUseCase tokenUseCase;
+    private AutenticacaoUseCase autenticacaoUseCase;
 
     private UsuarioEntity usuarioTeste;
 
@@ -79,7 +78,7 @@ public class UsuarioControlerTest {
     void testeMetodoConsultaPorId() throws Exception {
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
-        String token = tokenUseCase.generateToken(UsuarioMapper.paraDomain(usuarioTeste));
+        String token = autenticacaoUseCase.gerarToken(UsuarioMapper.paraDomain(usuarioTeste));
         ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/{id}", usuarioTeste.getId())
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -93,14 +92,20 @@ public class UsuarioControlerTest {
     @Test
     void testeMetodoAlterar() throws Exception {
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
-        Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
+        Mockito.when(repository.findByEmail(Mockito.any())).thenAnswer(invocation -> {
+            String email = invocation.getArgument(0);
+            if (email.equals(usuarioTeste.getEmail())) {
+                return Optional.of(usuarioTeste);
+            } else {
+                return Optional.empty();
+            }
+        });
+
         Mockito.when(repository.save(Mockito.any())).thenReturn(usuarioTeste);
-
-        String token = tokenUseCase.generateToken(UsuarioMapper.paraDomain(usuarioTeste));
-        String usuarioJson = "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\":\"senhatestenovA@123\"}";
-
+        String token = autenticacaoUseCase.gerarToken(UsuarioMapper.paraDomain(usuarioTeste));
+        String usuarioJson = "{\"nome\": \"User Test\", \"email\":\"novoemail@gmail.com\", \"senha\":\"senhatestenovA@123\"}";
         ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders
-                        .put("/usuarios", usuarioTeste.getId())
+                        .put("/usuarios/{id}", usuarioTeste.getId())
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJson))
@@ -109,13 +114,14 @@ public class UsuarioControlerTest {
         UsuarioValidator.validaUsuarioController(resultadoRequisicao);
     }
 
+
     @Test
     void teteMetodoDeletar() throws Exception {
         Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(usuarioTeste));
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
 
         Mockito.doNothing().when(repository).deleteById(Mockito.anyLong());
-        String token = tokenUseCase.generateToken(UsuarioMapper.paraDomain(usuarioTeste));
+        String token = autenticacaoUseCase.gerarToken(UsuarioMapper.paraDomain(usuarioTeste));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/usuarios/{id}", 1L)

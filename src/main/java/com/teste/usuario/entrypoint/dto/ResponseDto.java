@@ -2,14 +2,15 @@ package com.teste.usuario.entrypoint.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ResponseDto<T> {
 
     @JsonProperty("dado")
@@ -18,17 +19,23 @@ public class ResponseDto<T> {
 
     @JsonProperty("erro")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ErroDto erro;
+    private List<ErroDto> erro;
 
     public ResponseDto(T dado) {
         this.dado = dado;
     }
 
-    public static <T> ResponseDto<T> comErro(ErroDto erro) {
+    public static <T> ResponseDto<T> comErro(List<ErroDto> erros) {
         ResponseDto<T> responseDto = new ResponseDto<>();
-        responseDto.setErro(erro);
+        responseDto.setErro(erros);
         return responseDto;
     }
+
+//    public static <T> ResponseDto<T> comErro(ErroDto erro) {
+//        ResponseDto<T> responseDto = new ResponseDto<>();
+//        responseDto.setErro(erro);
+//        return responseDto;
+//    }
 
     @Getter
     @Setter
@@ -37,4 +44,5 @@ public class ResponseDto<T> {
         private String mensagem;
     }
 }
+
 

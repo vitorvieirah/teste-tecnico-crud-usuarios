@@ -5,7 +5,7 @@ import com.teste.usuario.domain.Usuario;
 import com.teste.usuario.entrypoint.dto.ResponseDto;
 import com.teste.usuario.entrypoint.dto.UsuarioDto;
 import com.teste.usuario.entrypoint.mapper.UsuarioMapper;
-import com.teste.usuario.infrastructure.security.TokenUseCase;
+import com.teste.usuario.infrastructure.security.TokenDataProvider;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserController {
 
     private final UsuarioUseCase useCase;
-    private final TokenUseCase tokenUseCase;
+    private final TokenDataProvider tokenDataProvider;
 
     @PostMapping
     public ResponseEntity<ResponseDto<UsuarioDto>> cadastrar(@Valid @RequestBody UsuarioDto novoUsuario) {
