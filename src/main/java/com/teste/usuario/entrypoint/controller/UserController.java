@@ -6,6 +6,7 @@ import com.teste.usuario.entrypoint.dto.ResponseDto;
 import com.teste.usuario.entrypoint.dto.UsuarioDto;
 import com.teste.usuario.entrypoint.mapper.UsuarioMapper;
 import com.teste.usuario.infrastructure.security.TokenDataProvider;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<ResponseDto<UsuarioDto>> consultarPorId(@PathVariable("id") Long idUser) {
         UsuarioDto resposta = UsuarioMapper.paraDto(useCase.consultarPorId(idUser));
         ResponseDto<UsuarioDto> responseDto = new ResponseDto<>(resposta);
@@ -42,6 +44,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<ResponseDto<UsuarioDto>> alterar(@Valid @RequestBody UsuarioDto novosDados, @PathVariable("id") Long idUsuario) {
         Usuario usuario = UsuarioMapper.paraDomain(novosDados);
         usuario = useCase.alterar(usuario, idUsuario);
@@ -51,6 +54,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<Void> deletar(@PathVariable("id") Long idUsuario) {
         useCase.deletar(idUsuario);
         return ResponseEntity.noContent().build();
