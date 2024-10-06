@@ -1,7 +1,11 @@
-# TESTE TECNICO | CRUD DE USUÁRIOS
+Seu README está bem estruturado e informativo! Aqui estão algumas correções e sugestões para melhorar a clareza e a gramática:
+
+---
+
+# TESTE TÉCNICO | CRUD DE USUÁRIOS
 
 ## SOBRE
-Projeto referente ao teste técnico da empresa Powerkr, que consiste em um CRUD (create, read, update e delete) de usuários com fins de testar conhecimentos técnicos nas seguintes tecnologias:
+Este projeto refere-se ao teste técnico da empresa Powerkr, que consiste em um CRUD (Create, Read, Update e Delete) de usuários, com o objetivo de testar conhecimentos técnicos nas seguintes tecnologias:
 
 - Java
 - API Rest
@@ -13,7 +17,7 @@ Projeto referente ao teste técnico da empresa Powerkr, que consiste em um CRUD 
 - Swagger
 
 ## TECNOLOGIAS USADAS
-Além das tecnologias requisitadas, foram utilizadas também:
+Além das tecnologias requisitadas, também foram utilizadas:
 
 - Lombok
 - Spring Boot Validation
@@ -21,52 +25,54 @@ Além das tecnologias requisitadas, foram utilizadas também:
 
 ## COMO UTILIZAR
 
-## 1° Subir a aplicação localmente
+### 1° Subir a aplicação localmente
 
-Para utilizar o projeto siga os seguintes passos:
+Para utilizar o projeto, siga os passos a seguir:
 
 ### 1° Clonar o projeto na sua máquina
-Abra seu terminal e no seu diretório de escolha rode o seguinte comando:
+Abra seu terminal e, no diretório de sua escolha, rode o seguinte comando:
 ```
 git clone https://github.com/vitorvieirah/teste-tecnico-crud-usuarios
-``` 
+```
 
-Após isso entre no diretório que será criado com o seguinte nome `teste-tecnico-crud-usuarios`.
+Após isso, entre no diretório que será criado com o nome `teste-tecnico-crud-usuarios`.
 
 ### 2° Baixar, atualizar e buildar o projeto com o gerenciador de dependências
 
 ### ATENÇÃO ⚠️
-Para essa etapa é essêncial que o gerenciador de dependências Maven esteje baixado e configurado corretamente.
+Para esta etapa, é essencial que o gerenciador de dependências Maven esteja baixado e configurado corretamente.
 
-Também a JDK na versão 17 que foi a versão utilizado no projeto.
+Além disso, a JDK na versão 17 deve estar instalada, pois foi a versão utilizada no projeto.
 
-Para baixar, atualizar e buildar o projeto, primeiro certifique-se que esteja no diretório raiz do projeto, `teste-tecnico-crud-usuarios`, e então execute o seguinte comando:
+Para baixar, atualizar e buildar o projeto, primeiro certifique-se de que você esteja no diretório raiz do projeto, `teste-tecnico-crud-usuarios`, e então execute o seguinte comando:
 ```
 mvn clean install
 ```
 
 ### 3° Executar a aplicação
-E por fim para executar a aplicação basta entrar no diretório onde está o `.jar` da aplicação `\teste-tecnico-crud-usuarios\target` e executar o seguinte comando:
+Por fim, para executar a aplicação, basta entrar no diretório onde está o arquivo `.jar` da aplicação `\teste-tecnico-crud-usuarios\target` e executar o seguinte comando:
 ```
 java -jar usuario-crud-teste.jar   
 ```
 
-E pronto sua aplicação estará em execução.
+E pronto! Sua aplicação estará em execução.
 
 ---
 
-## 2° Mandar requisições para a API
+## 2° Fazer requisições para a API
 
-Existem duas opções para fazer requisições:
+Existem duas opções para realizar requisições:
 
 ### 1° Usando Swagger
-Após subir a aplicação, acesse o seguinte link no seu navegador: `http://localhost:8080/swagger-ui.html` para mandar requisições para a API por meio do Swagger.
+Após subir a aplicação, acesse o seguinte link em seu navegador: `http://localhost:8080/swagger-ui.html` para enviar requisições à API por meio do Swagger.
 
 ### 2° Usando Postman Collection
-Após subir a aplicação, na raiz do projeto terá um arquivo chamado  `\teste-tecnico-crud-usuarios\teste-tecnico-usuario.postman_collection`, importe esse arquivo no Postman e faça suas requisições.
+Após subir a aplicação, na raiz do projeto, haverá um arquivo chamado `\teste-tecnico-crud-usuarios\teste-tecnico-usuario.postman_collection`. Importe esse arquivo no Postman e faça suas requisições.
 
 ## BANCO DE DADOS DA APLICAÇÃO 
-O projeto utiliza o banco de dados em memória H2, para acessar basta entrar no seguinte link em seu navegador `http://localhost:8080/h2` e entrar como usuário `admin` e senha `123`.
+O projeto utiliza o banco de dados em memória H2. Para acessá-lo, basta entrar no seguinte link em seu navegador: `http://localhost:8080/h2` e usar as credenciais de usuário `admin` e senha `123`.
+
+
 
 
 
