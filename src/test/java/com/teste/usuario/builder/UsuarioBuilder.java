@@ -29,6 +29,6 @@ public class UsuarioBuilder {
     }
 
     public static String gerarJsonUsuario() {
-        return "{\"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
+        return "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\":\"senhatesteA123@\"}";
     }
 }

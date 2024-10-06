@@ -25,10 +25,12 @@ public class UserController {
         Usuario usuario = UsuarioMapper.paraDomain(novoUsuario);
         usuario = useCase.cadastrar(usuario);
         UsuarioDto resposta = UsuarioMapper.paraDto(usuario);
-        String token = tokenUseCase.generateToken(UsuarioMapper.paraDomain(resposta));
-        resposta.setToken(token);
         ResponseDto<UsuarioDto> responseDto = new ResponseDto<>(resposta);
-        return ResponseEntity.created(UriComponentsBuilder.newInstance().path("/usuario/{id}").buildAndExpand(resposta.getId()).toUri())
+        return ResponseEntity.created(UriComponentsBuilder
+                        .newInstance()
+                        .path("/usuarios/{id}")
+                        .buildAndExpand(resposta.getId())
+                        .toUri())
                 .body(responseDto);
     }
 
@@ -40,8 +42,8 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ResponseDto<UsuarioDto>> alterar(@Valid @RequestBody UsuarioDto newData, @PathVariable("id") Long idUsuario) {
-        Usuario usuario = UsuarioMapper.paraDomain(newData);
+    public ResponseEntity<ResponseDto<UsuarioDto>> alterar(@Valid @RequestBody UsuarioDto novosDados, @PathVariable("id") Long idUsuario) {
+        Usuario usuario = UsuarioMapper.paraDomain(novosDados);
         usuario = useCase.alterar(usuario, idUsuario);
         UsuarioDto resposta = UsuarioMapper.paraDto(usuario);
         ResponseDto<UsuarioDto> responseDto = new ResponseDto<>(resposta);

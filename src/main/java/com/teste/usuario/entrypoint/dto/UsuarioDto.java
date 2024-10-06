@@ -5,15 +5,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UsuarioDto {
     @JsonProperty("id_usuario")
     private Long id;
@@ -35,6 +35,4 @@ public class UsuarioDto {
     private String senha;
     @JsonProperty("data_cadastro")
     private LocalDateTime dataCadastro;
-    @JsonProperty("token")
-    private String token;
 }

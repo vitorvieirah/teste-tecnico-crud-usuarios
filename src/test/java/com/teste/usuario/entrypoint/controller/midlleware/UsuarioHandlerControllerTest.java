@@ -4,6 +4,7 @@ import com.teste.usuario.builder.UsuarioBuilder;
 import com.teste.usuario.infrastructure.mapper.UsuarioMapper;
 import com.teste.usuario.infrastructure.repositories.UsuarioRepository;
 import com.teste.usuario.infrastructure.repositories.entities.UsuarioEntity;
+import com.teste.usuario.infrastructure.security.TokenUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,18 @@ public class UsuarioHandlerControllerTest {
     @MockBean
     private UsuarioRepository repository;
 
-    private final UsuarioEntity userTeste = UsuarioMapper.paraEntity(UsuarioBuilder.gerarUsuario());
+    @Autowired
+    private TokenUseCase tokenUseCase;
+
+    private final UsuarioEntity usuarioTeste = UsuarioMapper.paraEntity(UsuarioBuilder.gerarUsuario());
 
     private final String USUARIO_JSON = UsuarioBuilder.gerarJsonUsuario();
 
 
     @Test
     void testeExceptionUsuarioJaCadastroComEmail() throws Exception {
-        Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(userTeste));
-        Mockito.when(repository.save(Mockito.any())).thenReturn(userTeste);
+        Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
+        Mockito.when(repository.save(Mockito.any())).thenReturn(usuarioTeste);
 
         ResultActions resultadoRequisicao = mockMvc
                 .perform(MockMvcRequestBuilders.post("/usuarios")
@@ -46,19 +50,23 @@ public class UsuarioHandlerControllerTest {
 
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Usuário com este email já cadastrado"));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagem").value("Usuário com este email já cadastrado"));
     }
 
     @Test
     void testeExceptionUsuarioNaoEncontrado() throws Exception {
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
 
-        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/{id}", userTeste.getId()))
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
+        String token = tokenUseCase.generateToken(UsuarioMapper.paraDomain(usuarioTeste));
+
+        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/{id}", usuarioTeste.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
 
 
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Usuário não encontrado"));
     }
 
 

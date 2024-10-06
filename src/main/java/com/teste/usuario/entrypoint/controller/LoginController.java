@@ -3,6 +3,8 @@ package com.teste.usuario.entrypoint.controller;
 import com.teste.usuario.aplication.usecases.LoginUseCase;
 import com.teste.usuario.entrypoint.dto.LoginDto;
 import com.teste.usuario.entrypoint.dto.LoginRespostaDto;
+import com.teste.usuario.entrypoint.dto.ResponseDto;
+import com.teste.usuario.entrypoint.dto.UsuarioDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,9 @@ public class LoginController {
     private final LoginUseCase useCase;
 
     @PostMapping
-    public ResponseEntity<LoginRespostaDto> login(@Valid @RequestBody LoginDto body) {
+    public ResponseEntity<ResponseDto<LoginRespostaDto>> login(@Valid @RequestBody LoginDto body) {
         LoginRespostaDto respostaLogin = useCase.login(body.getEmail(), body.getSenha());
-        return ResponseEntity.ok(respostaLogin);
+        ResponseDto<LoginRespostaDto> responseDto = new ResponseDto<>(respostaLogin);
+        return ResponseEntity.ok(responseDto);
     }
 }

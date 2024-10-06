@@ -20,18 +20,19 @@ public class UsuarioValidator {
     }
 
     public static void validaUsuarioController(ResultActions resultActions) throws Exception {
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L));
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("User Test"));
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("emailteste@gmail.com"));
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.password").value("senhateste123"));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.dado.id_usuario").value(1L));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.dado.nome").value("User Test"));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.dado.email").value("emailteste@gmail.com"));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.dado.senha").exists());
         resultActions.andExpect(result -> {
             String responseContent = result.getResponse().getContentAsString();
 
-            String dateRegisterStr = JsonPath.parse(responseContent).read("$.dateRegister", String.class);
+            String dateRegisterStr = JsonPath.parse(responseContent).read("$.dado.data_cadastro", String.class);
 
             LocalDateTime actualDate = LocalDateTime.parse(dateRegisterStr);
 
             Assertions.assertEquals(dataFixa, actualDate);
         });
     }
+
 }

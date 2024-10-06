@@ -23,7 +23,7 @@ public class UserHandlerController {
     }
 
     @ExceptionHandler(UsuarioNaoEncontradoException.class)
-    public ResponseEntity<ResponseDto> usuarioJaCadastradoExceptionHandler(UsuarioNaoEncontradoException exception) {
+    public ResponseEntity<ResponseDto> usuarioNaoEncontradoExceptionHandler(UsuarioNaoEncontradoException exception) {
         ResponseDto.ErroDto  erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.comErro(erroDto));
     }

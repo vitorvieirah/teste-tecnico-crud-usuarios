@@ -7,10 +7,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,16 +31,14 @@ public class FiltroDeSeguranca extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recuperarToken(request);
         var login = tokenUseCase.validaToken(token);
-
         if(login != null) {
-            UsuarioEntity user = repository.findByEmail(login).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+            UsuarioEntity usuario = repository.findByEmail(login).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
             var autorizacoes = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, autorizacoes);
+            var authentication = new UsernamePasswordAuthenticationToken(usuario, null, autorizacoes);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
-
     private String recuperarToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -45,5 +46,4 @@ public class FiltroDeSeguranca extends OncePerRequestFilter {
         }
         return authHeader.substring(7).trim(); // Remove "Bearer " prefix e espaços adicionais
     }
-
 }
