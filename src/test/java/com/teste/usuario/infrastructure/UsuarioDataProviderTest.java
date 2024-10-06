@@ -31,7 +31,7 @@ public class UsuarioDataProviderTest {
     private final Usuario usuarioTeste = UsuarioBuilder.gerarUsuario();
 
     @Test
-    void testSaveUser() {
+    void testeSalvarUsuario() {
         Mockito.when(repository.save(Mockito.any())).thenReturn(UsuarioMapper.paraEntity(usuarioTeste));
         usuarioTeste.setId(null);
         Usuario usuarioResult = dataProvider.salvar(usuarioTeste);
@@ -41,14 +41,14 @@ public class UsuarioDataProviderTest {
     }
 
     @Test
-    void testSaveException() {
+    void testeMetodoSalvarLancaExcpetion() {
         Mockito.when(repository.save(Mockito.any())).thenThrow(RuntimeException.class);
         ErroDataProviderException exception = Assertions.assertThrows(ErroDataProviderException.class, () -> dataProvider.salvar(usuarioTeste));
         Assertions.assertEquals("Erro ao salvar usuário.", exception.getMessage());
     }
 
     @Test
-    void testConsultByEmail() {
+    void testeConsultarPorEmail() {
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(UsuarioMapper.paraEntity(usuarioTeste)));
         Optional<Usuario> userResult = dataProvider.consultarPorEmail(usuarioTeste.getEmail());
         userResult.ifPresent(user -> {
@@ -59,14 +59,14 @@ public class UsuarioDataProviderTest {
     }
 
     @Test
-    void testConsultByEmailException() {
+    void testeMetodoConsultarPorEmailLancaException() {
         Mockito.when(repository.findByEmail(Mockito.any())).thenThrow(RuntimeException.class);
         ErroDataProviderException exception = Assertions.assertThrows(ErroDataProviderException.class, () -> dataProvider.consultarPorEmail(usuarioTeste.getEmail()));
         Assertions.assertEquals("Erro ao consultar por email.", exception.getMessage());
     }
 
     @Test
-    void testConsultById() {
+    void testeConsultarPorId() {
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(UsuarioMapper.paraEntity(usuarioTeste)));
         Optional<Usuario> userResult = dataProvider.consultarPorId(idTest);
         userResult.ifPresent(user -> {
@@ -77,7 +77,7 @@ public class UsuarioDataProviderTest {
     }
 
     @Test
-    void testConsultByIdException() {
+    void testeMetodoConsultarPorIdLacaException() {
         Mockito.when(repository.findById(Mockito.any())).thenThrow(RuntimeException.class);
         ErroDataProviderException exception = Assertions.assertThrows(ErroDataProviderException.class, () -> dataProvider.consultarPorId(idTest));
         Assertions.assertEquals("Erro ao consultar por id.", exception.getMessage());
