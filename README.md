@@ -1,2 +1,2 @@
-# user-technical-test
+# usuario-technical-test
 Project regarding Powerkr technical testing
