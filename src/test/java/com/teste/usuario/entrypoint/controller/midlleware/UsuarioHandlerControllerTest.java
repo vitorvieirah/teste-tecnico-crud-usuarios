@@ -175,7 +175,7 @@ public class UsuarioHandlerControllerTest {
 
     @Test
     void testeExceptionMethodArgumentNotValidSenhaMenorQue6MetodoCadastrar() throws Exception {
-        String usuarioJsonErroValidacao = "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\": \"1234\"}";
+        String usuarioJsonErroValidacao = "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\": \"aA2$\"}";
 
         ResultActions resultadoRequisicao = mockMvc
                 .perform(MockMvcRequestBuilders.post("/usuarios")
@@ -260,7 +260,7 @@ public class UsuarioHandlerControllerTest {
 
     @Test
     void testeExceptionMethodArgumentNotValidSenhaMenorQue6MetodoAlterar() throws Exception {
-        String usuarioJsonErroValidacao = "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\": \"senha\"}";
+        String usuarioJsonErroValidacao = "{\"nome\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"senha\": \"aA#1\"}";
         String token = autenticacaoUseCase.gerarToken(UsuarioMapper.paraDomain(usuarioTeste));
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
         ResultActions resultadoRequisicao = mockMvc
