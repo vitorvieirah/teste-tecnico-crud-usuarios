@@ -1,7 +1,3 @@
-Seu README está bem estruturado e informativo! Aqui estão algumas correções e sugestões para melhorar a clareza e a gramática:
-
----
-
 # TESTE TÉCNICO | CRUD DE USUÁRIOS
 
 ## SOBRE
