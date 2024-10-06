@@ -1,8 +1,10 @@
 package com.teste.usuario.entrypoint.controller;
 
+import com.teste.usuario.builder.UsuarioBuilder;
+import com.teste.usuario.infrastructure.mapper.UsuarioMapper;
 import com.teste.usuario.infrastructure.repositories.UsuarioRepository;
 import com.teste.usuario.infrastructure.repositories.entities.UsuarioEntity;
-import com.teste.usuario.validator.UserValidator;
+import com.teste.usuario.validator.UsuarioValidator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @SpringBootTest
@@ -28,20 +29,14 @@ public class UsuarioControlerTest {
     @MockBean
     private UsuarioRepository repository;
 
-    private final UsuarioEntity userTest = UsuarioEntity.builder()
-            .id(1L)
-            .nome("User Test")
-            .email("emailteste@gmail.com")
-            .senha("senhateste123")
-            .dataCadastro(LocalDateTime.of(2024, 10, 5, 12, 23, 42, 414851900))
-            .build();
+    private final UsuarioEntity userTeste = UsuarioMapper.paraEntity(UsuarioBuilder.gerarUsuario());
 
-    private final String USUARIO_JSON = "{\"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
+    private final String USUARIO_JSON = UsuarioBuilder.gerarJsonUsuario();
 
     @Test
     void testeMetodoCadastroUsuario() throws Exception {
         Mockito.when(repository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(repository.save(Mockito.any())).thenReturn(userTest);
+        Mockito.when(repository.save(Mockito.any())).thenReturn(userTeste);
 
         ResultActions resultadoRequisicao = mockMvc
                 .perform(MockMvcRequestBuilders.post("/users/register")
@@ -49,23 +44,23 @@ public class UsuarioControlerTest {
                         .content(USUARIO_JSON));
 
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isCreated());
-        UserValidator.userValidateController(resultadoRequisicao);
+        UsuarioValidator.validaUsuarioController(resultadoRequisicao);
     }
 
     @Test
     void testeMetodoConsultaPorId() throws Exception {
-        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTest));
-        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/users/consult/{id}", userTest.getId()))
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTeste));
+        ResultActions resultadoRequisicao = mockMvc.perform(MockMvcRequestBuilders.get("/users/consult/{id}", userTeste.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
 
-        UserValidator.userValidateController(resultadoRequisicao);
+        UsuarioValidator.validaUsuarioController(resultadoRequisicao);
     }
 
     @Test
     void testeMetodoAlterar() throws Exception {
-        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTest));
-        Mockito.when(repository.save(Mockito.any())).thenReturn(userTest);
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(userTeste));
+        Mockito.when(repository.save(Mockito.any())).thenReturn(userTeste);
 
         String usuarioJson = "{\"id\": 1, \"name\": \"User Test\", \"email\":\"emailteste@gmail.com\", \"password\":\"senhateste123\"}";
 
@@ -75,12 +70,12 @@ public class UsuarioControlerTest {
                         .content(usuarioJson))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        UserValidator.userValidateController(resultadoRequisicao);
+        UsuarioValidator.validaUsuarioController(resultadoRequisicao);
     }
 
     @Test
     void teteMetodoDeletar() throws Exception {
-        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(userTest));
+        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(userTeste));
 
         Mockito.doNothing().when(repository).deleteById(Mockito.anyLong());
 

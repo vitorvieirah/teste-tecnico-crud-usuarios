@@ -1,5 +1,6 @@
 package com.teste.usuario.validator;
 
+import com.teste.usuario.builder.UsuarioBuilder;
 import com.teste.usuario.domain.Usuario;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Assertions;
@@ -8,17 +9,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 
-public class UserValidator {
+public class UsuarioValidator {
 
-    private static final LocalDateTime fixedDate = LocalDateTime.of(2024, 10, 5, 12, 23, 42, 414851900);
+    private static final LocalDateTime dataFixa = UsuarioBuilder.gerarData();
 
-    public static void userValidate(Usuario expectedData, Usuario dataReceived) {
+    public static void validaUsuario(Usuario expectedData, Usuario dataReceived) {
         Assertions.assertEquals(expectedData.getNome(), dataReceived.getNome());
         Assertions.assertEquals(expectedData.getEmail(), dataReceived.getEmail());
         Assertions.assertEquals(expectedData.getSenha(), dataReceived.getSenha());
     }
 
-    public static void userValidateController(ResultActions resultActions) throws Exception {
+    public static void validaUsuarioController(ResultActions resultActions) throws Exception {
         resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L));
         resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("User Test"));
         resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("emailteste@gmail.com"));
@@ -30,7 +31,7 @@ public class UserValidator {
 
             LocalDateTime actualDate = LocalDateTime.parse(dateRegisterStr);
 
-            Assertions.assertEquals(fixedDate, actualDate);
+            Assertions.assertEquals(dataFixa, actualDate);
         });
     }
 }

@@ -5,15 +5,15 @@ import com.teste.usuario.aplication.exceptions.UsuarioNaoEncontradoException;
 import com.teste.usuario.aplication.gateways.UsuarioGateway;
 import com.teste.usuario.aplication.usecases.CriptografiaUseCase;
 import com.teste.usuario.aplication.usecases.UsuarioUseCase;
+import com.teste.usuario.builder.UsuarioBuilder;
 import com.teste.usuario.domain.Usuario;
-import com.teste.usuario.validator.UserValidator;
+import com.teste.usuario.validator.UsuarioValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,204 +31,114 @@ public class UsuarioUseCaseTest {
     @InjectMocks
     private UsuarioUseCase useCase;
 
-    private final Long idTest = 1L;
-
-    private final LocalDateTime fixedDate = LocalDateTime.of(2024, 10, 5, 12, 23, 42);
-
-    private final Usuario usuarioTest = Usuario.builder()
-            .id(idTest)
-            .nome("User Test")
-            .email("emailteste@gmail.com")
-            .senha("senhateste123")
-            .dataCadastro(fixedDate)
-            .build();
+    private final Usuario usuarioTeste = UsuarioBuilder.gerarUsuario();
+    private final Long idTeste = UsuarioBuilder.gerarId();
 
     @Test
-    void testRegistration() {
-        usuarioTest.setId(null);
-        Usuario usuarioEsperado = Usuario.builder()
-                .id(usuarioTest.getId())
-                .nome(usuarioTest.getNome())
-                .email(usuarioTest.getEmail())
-                .senha(usuarioTest.getSenha())
-                .dataCadastro(usuarioTest.getDataCadastro())
-                .build();
+    void testeCadastroDeUsuario() {
+        usuarioTeste.setId(null);
 
+        Mockito.when(gateway.consultarPorEmail(usuarioTeste.getEmail())).thenReturn(Optional.empty());
+        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTeste);
+        Mockito.when(criptografiaUseCase.criptografar(usuarioTeste.getSenha())).thenReturn(usuarioTeste.getSenha());
 
-        Mockito.when(gateway.consultarPorEmail(usuarioTest.getEmail())).thenReturn(Optional.empty());
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-        Mockito.when(criptografiaUseCase.criptografar(usuarioTest.getSenha())).thenReturn(usuarioTest.getSenha());
-
-        useCase.cadastrar(usuarioTest);
+        useCase.cadastrar(usuarioTeste);
         Usuario usuarioResult = captor.getValue();
 
         Assertions.assertNull(usuarioResult.getId());
-        Assertions.assertEquals(usuarioEsperado.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(usuarioEsperado.getEmail(), usuarioResult.getEmail());
+        Assertions.assertEquals(usuarioTeste.getNome(), usuarioResult.getNome());
+        Assertions.assertEquals(usuarioTeste.getEmail(), usuarioResult.getEmail());
         Assertions.assertNotNull(usuarioResult.getDataCadastro());
-        Assertions.assertEquals(usuarioEsperado.getSenha(), usuarioResult.getSenha());
+        Assertions.assertEquals(usuarioTeste.getSenha(), usuarioResult.getSenha());
     }
 
     @Test
-    void testExistingUserRegistration() {
-        Mockito.when(gateway.consultarPorEmail(usuarioTest.getEmail())).thenReturn(Optional.of(usuarioTest));
-        UsuarioJaCadastradoComEmailException exeception = Assertions.assertThrows(UsuarioJaCadastradoComEmailException.class, () -> useCase.cadastrar(usuarioTest));
+    void testeCadastroDeUsuarioJaExistente() {
+        Mockito.when(gateway.consultarPorEmail(usuarioTeste.getEmail())).thenReturn(Optional.of(usuarioTeste));
+        UsuarioJaCadastradoComEmailException exeception = Assertions.assertThrows(UsuarioJaCadastradoComEmailException.class, () -> useCase.cadastrar(usuarioTeste));
         Assertions.assertEquals("Usuário com este email já cadastrado", exeception.getMessage());
     }
 
     @Test
-    void testQueryById() {
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Usuario usuarioResult = Assertions.assertDoesNotThrow(() -> useCase.consultarPorId(idTest));
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        UserValidator.userValidate(usuarioTest, usuarioResult);
-        Mockito.verify(gateway, Mockito.times(1)).consultarPorId(idTest);
+    void testeConsultaUsuarioPorId() {
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.of(usuarioTeste));
+        Usuario usuarioResult = Assertions.assertDoesNotThrow(() -> useCase.consultarPorId(idTeste));
+        Assertions.assertEquals(idTeste, usuarioResult.getId());
+        UsuarioValidator.validaUsuario(usuarioTeste, usuarioResult);
+        Mockito.verify(gateway, Mockito.times(1)).consultarPorId(idTeste);
     }
 
     @Test
-    void testQueryNonExistentUseById() {
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.empty());
-        UsuarioNaoEncontradoException exception = Assertions.assertThrows(UsuarioNaoEncontradoException.class, () -> useCase.consultarPorId(idTest));
+    void testeNenhumUsuarioEncontrado() {
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.empty());
+        UsuarioNaoEncontradoException exception = Assertions.assertThrows(UsuarioNaoEncontradoException.class, () -> useCase.consultarPorId(idTeste));
         Assertions.assertEquals("Usuário não encontrado", exception.getMessage());
     }
 
     @Test
-    void testChangesUserData() {
+    void testeAlteracaoDeDadosUsuario() {
         Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
+                .id(idTeste)
                 .nome("Novo nome teste")
                 .email("novoemailtete@gmail.com")
                 .senha("novasenhasecretateste123")
                 .build();
 
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.of(usuarioTeste));
+        Mockito.when(gateway.consultarPorEmail(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTeste);
         Mockito.when(criptografiaUseCase.criptografar(newUsuarioTest.getSenha())).thenReturn(newUsuarioTest.getSenha());
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
 
-        useCase.alterar(newUsuarioTest, idTest);
+        useCase.alterar(newUsuarioTest, idTeste);
 
         Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        UserValidator.userValidate(newUsuarioTest, usuarioResult);
+        Assertions.assertEquals(idTeste, usuarioResult.getId());
+        UsuarioValidator.validaUsuario(newUsuarioTest, usuarioResult);
     }
 
     @Test
-    void testChangesToUserDataWithNullName() {
+    void testeAlteracaoDeDadosUsuarioNaoEncontrado() {
         Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
-                .email("novoemailtete@gmail.com")
-                .senha("novasenhasecretateste123")
-                .build();
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(criptografiaUseCase.criptografar(newUsuarioTest.getSenha())).thenReturn(newUsuarioTest.getSenha());
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-
-        useCase.alterar(newUsuarioTest, idTest);
-
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(usuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(newUsuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(newUsuarioTest.getSenha(), usuarioResult.getSenha());
-    }
-
-    @Test
-    void testChangesToUsersDataWithNullEmail() {
-        Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
+                .id(idTeste)
                 .nome("Novo nome teste")
-                .senha("novasenhasecretateste123")
-                .build();
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(criptografiaUseCase.criptografar(newUsuarioTest.getSenha())).thenReturn(newUsuarioTest.getSenha());
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-
-        useCase.alterar(newUsuarioTest, idTest);
-
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(newUsuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(usuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(newUsuarioTest.getSenha(), usuarioResult.getSenha());
-    }
-
-    @Test
-    void testChangesToUsersDataWithNullPassword() {
-        Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
-                .nome("Novo nome teste")
-                .email("novoemailtete@gmail.com")
-                .build();
-
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-
-        useCase.alterar(newUsuarioTest);
-
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(newUsuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(newUsuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(usuarioTest.getSenha(), usuarioResult.getSenha());
-    }
-
-    @Test
-    void testChangesToUserDataWithJustAName() {
-        Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
-                .nome("Novo nome teste")
-                .build();
-
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-
-        useCase.alterar(newUsuarioTest);
-
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(newUsuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(usuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(usuarioTest.getSenha(), usuarioResult.getSenha());
-    }
-
-    @Test
-    void testChangesToUserDataWithJustAEmail() {
-        Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
-                .email("novoemailtete@gmail.com")
-                .build();
-
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
-
-        useCase.alterar(newUsuarioTest);
-
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(usuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(newUsuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(usuarioTest.getSenha(), usuarioResult.getSenha());
-    }
-
-    @Test
-    void testChangesToUserDataWithJustAPassword() {
-        Usuario newUsuarioTest = Usuario.builder()
-                .id(idTest)
+                .email("emailteste@gmail.com")
                 .senha("novasenhasecretateste123")
                 .build();
 
-        Mockito.when(gateway.consultarPorId(idTest)).thenReturn(Optional.of(usuarioTest));
-        Mockito.when(criptografiaUseCase.criptografar(newUsuarioTest.getSenha())).thenReturn(newUsuarioTest.getSenha());
-        Mockito.when(gateway.salvar(captor.capture())).thenReturn(usuarioTest);
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.empty());
 
-        useCase.alterar(newUsuarioTest);
+        UsuarioNaoEncontradoException exception = Assertions.assertThrows(UsuarioNaoEncontradoException.class, () -> useCase.alterar(newUsuarioTest, idTeste));
+        Assertions.assertEquals("Usuário não encontrado", exception.getMessage());
+    }
 
-        Usuario usuarioResult = captor.getValue();
-        Assertions.assertEquals(idTest, usuarioResult.getId());
-        Assertions.assertEquals(usuarioTest.getNome(), usuarioResult.getNome());
-        Assertions.assertEquals(usuarioTest.getEmail(), usuarioResult.getEmail());
-        Assertions.assertEquals(newUsuarioTest.getSenha(), usuarioResult.getSenha());
+    @Test
+    void testeAlteracaoDeDadosUsuarioComEmailJaExistente() {
+        Usuario newUsuarioTest = Usuario.builder()
+                .id(idTeste)
+                .nome("Novo nome teste")
+                .email("emailteste@gmail.com")
+                .senha("novasenhasecretateste123")
+                .build();
+
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.of(usuarioTeste));
+        Mockito.when(gateway.consultarPorEmail(Mockito.any())).thenReturn(Optional.of(usuarioTeste));
+
+        UsuarioJaCadastradoComEmailException exception = Assertions.assertThrows(UsuarioJaCadastradoComEmailException.class, () -> useCase.alterar(newUsuarioTest, idTeste));
+        Assertions.assertEquals("Usuário com este email já cadastrado", exception.getMessage());
     }
 
 
+    @Test
+    void testeDeletarUsuario() {
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.of(usuarioTeste));
+        Assertions.assertDoesNotThrow(() -> useCase.deletar(idTeste));
+        Mockito.verify(gateway, Mockito.times(1)).deletar(idTeste);
+    }
+
+    @Test
+    void testeDeletarUsuarioNaoExistente() {
+        Mockito.when(gateway.consultarPorId(idTeste)).thenReturn(Optional.empty());
+        UsuarioNaoEncontradoException exception = Assertions.assertThrows(UsuarioNaoEncontradoException.class, () -> useCase.deletar(idTeste));
+        Assertions.assertEquals("Usuário não encontrado", exception.getMessage());
+    }
 }

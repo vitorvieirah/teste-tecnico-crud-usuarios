@@ -37,7 +37,7 @@ public class UserHandlerController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto> erroGeral(Exception exception) {
-        ResponseDto.ErroDto  erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
+        ResponseDto.ErroDto erroDto = ResponseDto.ErroDto.builder().mensagem(exception.getMessage()).build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.comErro(erroDto));
     }
 
