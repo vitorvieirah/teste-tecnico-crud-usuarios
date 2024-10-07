@@ -11,7 +11,7 @@ public class AutenticacaoUseCase {
 
     private final TokenGateway gateway;
 
-    public String gerarToken(Usuario usuario){
+    public String gerarToken(Usuario usuario) {
         return gateway.geradorToken(usuario.getEmail());
     }
 

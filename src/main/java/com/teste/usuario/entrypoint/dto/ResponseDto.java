@@ -19,29 +19,23 @@ public class ResponseDto<T> {
 
     @JsonProperty("erro")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<ErroDto> erro;
+    private ErroDto erro;
 
     public ResponseDto(T dado) {
         this.dado = dado;
     }
 
-    public static <T> ResponseDto<T> comErro(List<ErroDto> erros) {
+    public static <T> ResponseDto<T> comErro(ErroDto erro) {
         ResponseDto<T> responseDto = new ResponseDto<>();
-        responseDto.setErro(erros);
+        responseDto.setErro(erro);
         return responseDto;
     }
-
-//    public static <T> ResponseDto<T> comErro(ErroDto erro) {
-//        ResponseDto<T> responseDto = new ResponseDto<>();
-//        responseDto.setErro(erro);
-//        return responseDto;
-//    }
 
     @Getter
     @Setter
     @Builder
     public static class ErroDto {
-        private String mensagem;
+        private List<String> mensagens;
     }
 }
 

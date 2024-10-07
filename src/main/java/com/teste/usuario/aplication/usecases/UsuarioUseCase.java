@@ -56,7 +56,7 @@ public class UsuarioUseCase {
     public Usuario consultarPorEmail(String email) {
         Optional<Usuario> usuario = gateway.consultarPorEmail(email);
 
-        if(usuario.isEmpty()) {
+        if (usuario.isEmpty()) {
             throw new UsuarioNaoEncontradoException();
         }
 

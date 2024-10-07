@@ -1,7 +1,3 @@
-Seu README está bem estruturado e informativo! Aqui estão algumas correções e sugestões para melhorar a clareza e a gramática:
-
----
-
 # TESTE TÉCNICO | CRUD DE USUÁRIOS
 
 ## SOBRE
@@ -25,7 +21,7 @@ Além das tecnologias requisitadas, também foram utilizadas:
 
 ## COMO UTILIZAR
 
-### 1° Subir a aplicação localmente
+## 1° Subir a aplicação localmente
 
 Para utilizar o projeto, siga os passos a seguir:
 
@@ -52,7 +48,7 @@ mvn clean install
 ### 3° Executar a aplicação
 Por fim, para executar a aplicação, basta entrar no diretório onde está o arquivo `.jar` da aplicação `\teste-tecnico-crud-usuarios\target` e executar o seguinte comando:
 ```
-java -jar usuario-crud-teste.jar   
+java -jar usuario-crud.jar   
 ```
 
 E pronto! Sua aplicação estará em execução.
@@ -67,7 +63,9 @@ Existem duas opções para realizar requisições:
 Após subir a aplicação, acesse o seguinte link em seu navegador: `http://localhost:8080/swagger-ui.html` para enviar requisições à API por meio do Swagger.
 
 ### 2° Usando Postman Collection
-Após subir a aplicação, na raiz do projeto, haverá um arquivo chamado `\teste-tecnico-crud-usuarios\teste-tecnico-usuario.postman_collection`. Importe esse arquivo no Postman e faça suas requisições.
+Após subir a aplicação, na raiz do projeto, haverá um arquivo na pasta `arquivos` chamado `teste-tecnico-usuario.postman_collection`, caminho: `\teste-tecnico-crud-usuarios\arquivos\teste-tecnico-usuario.postman_collection`. 
+
+Importe esse arquivo no Postman e faça suas requisições.
 
 ## BANCO DE DADOS DA APLICAÇÃO 
 O projeto utiliza o banco de dados em memória H2. Para acessá-lo, basta entrar no seguinte link em seu navegador: `http://localhost:8080/h2` e usar as credenciais de usuário `admin` e senha `123`.

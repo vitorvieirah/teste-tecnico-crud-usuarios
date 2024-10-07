@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.teste.usuario.aplication.gateways.TokenGateway;
-import com.teste.usuario.domain.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class TokenDataProvider implements TokenGateway {
     public String validaToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(chaveSecreta);
-            return  JWT.require(algorithm)
+            return JWT.require(algorithm)
                     .withIssuer("api-autenticacao-login")
                     .build()
                     .verify(token)

@@ -4,7 +4,6 @@ import com.teste.usuario.aplication.usecases.LoginUseCase;
 import com.teste.usuario.entrypoint.dto.LoginDto;
 import com.teste.usuario.entrypoint.dto.LoginRespostaDto;
 import com.teste.usuario.entrypoint.dto.ResponseDto;
-import com.teste.usuario.entrypoint.dto.UsuarioDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

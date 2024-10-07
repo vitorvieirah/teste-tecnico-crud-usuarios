@@ -6,7 +6,6 @@ import com.teste.usuario.infrastructure.dataprovider.exceptions.ErroDataProvider
 import com.teste.usuario.infrastructure.mapper.UsuarioMapper;
 import com.teste.usuario.infrastructure.repositories.UsuarioRepository;
 import com.teste.usuario.infrastructure.repositories.entities.UsuarioEntity;
-import com.teste.usuario.infrastructure.security.TokenDataProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class UsuarioHandlerControllerTest {
 
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("Usuário com este email já cadastrado"));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Usuário com este email já cadastrado"));
     }
 
     @Test
@@ -66,6 +65,8 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Usuário não encontrado"));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class UsuarioHandlerControllerTest {
                         .content(USUARIO_JSON))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("Erro ao salvar usuário."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Erro ao salvar usuário."));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("Erro ao consultar por id."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Erro ao consultar por id."));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class UsuarioHandlerControllerTest {
                         .content(USUARIO_JSON))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("Erro ao consultar por email."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Erro ao consultar por email."));
     }
 
     @Test
@@ -130,7 +131,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("Erro ao deletar usuário."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("Erro ao deletar usuário."));
     }
 
 
@@ -143,7 +144,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("O nome é obrigatório."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("O nome é obrigatório."));
 
     }
 
@@ -156,7 +157,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("O email é obrigatório."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("O email é obrigatório."));
 
     }
 
@@ -169,7 +170,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha é obrigatória."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha é obrigatória."));
 
     }
 
@@ -182,7 +183,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve ter no mínimo 6 caracteres."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve ter no mínimo 6 caracteres."));
 
     }
 
@@ -195,7 +196,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
 
     }
 
@@ -208,7 +209,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
 
     }
 
@@ -224,7 +225,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("O nome é obrigatório."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("O nome é obrigatório."));
 
     }
 
@@ -239,7 +240,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("O email é obrigatório."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("O email é obrigatório."));
 
     }
 
@@ -254,7 +255,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha é obrigatória."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha é obrigatória."));
 
     }
 
@@ -269,7 +270,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve ter no mínimo 6 caracteres."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve ter no mínimo 6 caracteres."));
 
     }
 
@@ -284,7 +285,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
 
     }
 
@@ -299,8 +300,7 @@ public class UsuarioHandlerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonErroValidacao));
         resultadoRequisicao.andExpect(MockMvcResultMatchers.status().isBadRequest());
-        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro[0].mensagem").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
-
+        resultadoRequisicao.andExpect(MockMvcResultMatchers.jsonPath("$.erro.mensagens[0]").value("A senha deve conter pelo menos uma letra, um número e um caractere especial."));
     }
 
 
